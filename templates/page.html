@@ -11,12 +11,35 @@
   </head>
   <body>
     <div class="container">
-      <h1>My App</h1>
-      <p>{{name}}</p>
-      <form method="POST" action="/">
-        <input name="name" />
-        <button type="submit">Submit</button>
-      </form>
+      <h1>Form</h1>
+      <article>
+        <form method="POST" action="/">
+          <div class="grid">
+            <div>
+              <label for="name">Name</label>
+              <input id="name" name="name" type="text" required />
+            </div>
+            <div>
+              <label for="amount">Amount</label>
+              <input id="amount" name="amount" type="number" required />
+            </div>
+          </div>
+          <label for="amount">Comment</label>
+          <input id="comment" name="comment" type="text" required />
+          <button type="submit">Submit</button>
+        </form>
+      </article>
+
+      <h1>Donations</h1>
+      {% for donation in donations %}
+      <article class="grid">
+        <div>📆 {{ donation["createdAt"] }}</div>
+        <div>🪪 {{ donation["name"] }}</div>
+        <div>💰 {{ "฿{:,d}".format(donation["amount"]) }}</div>
+        <div>✍🏿 {{ donation["comment"] }}</div>
+      </article>
+
+      {% endfor %}
     </div>
   </body>
 </html>
