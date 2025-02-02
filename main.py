@@ -1,57 +1,41 @@
-from typing import Annotated
-
-from fastapi import FastAPI, Form, Request
+from fastapi import FastAPI, Request
+from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
-from db import dbConn
-import pandas as pd
-
-templates = Jinja2Templates(directory="templates")
-
 
 app = FastAPI()
 
 
+####################
+# String responses
+####################
 @app.get("/")
-def homepage_get(request: Request):
-    donations = getAllDonations()
-    return templates.TemplateResponse(
-        request=request, name="page.html", context={"donations": donations}
-    )
+def homepage_str(request: Request):
+    return "Hello World!"
 
 
-@app.post("/")
-def homepage_post(
-    name: Annotated[str, Form()],
-    amount: Annotated[int, Form()],
-    comment: Annotated[str, Form()],
-    request: Request,
-):
-    insertDonation(name, amount, comment)
-    donations = getAllDonations()
-    return templates.TemplateResponse(
-        request=request, name="page.html", context={"donations": donations}
-    )
+####################
+# HTML responses
+####################
+# @app.get("/")
+# async def homepage_html():
+#     html_content = """
+#     <html>
+#         <head>
+#             <title>My App</title>
+#         </head>
+#         <body>
+#             <h1>Hello World</h1>
+#         </body>
+#     </html>
+#     """
+#     return HTMLResponse(content=html_content, status_code=200)
+
+####################
+# Template responses
+####################
+# templates = Jinja2Templates(directory="templates")
 
 
-def insertDonation(name, amount, comment):
-    cursor = dbConn.cursor()
-    cursor.execute(
-        "INSERT INTO Donation (name, amount, comment) VALUES (%s, %s, %s)",
-        (name, amount, comment),
-    )
-    dbConn.commit()
-    cursor.close()
-
-
-def getAllDonations():
-    cursor = dbConn.cursor()
-    cursor.execute("SELECT * FROM Donation")
-    results = cursor.fetchall()
-    cursor.close()
-    df = pd.DataFrame(
-        results, columns=["id", "name", "amount", "comment", "createdAt", "updatedAt"]
-    )
-    df.sort_values(by="createdAt", ascending=False, inplace=True)
-    df["createdAt"] = df["createdAt"].dt.strftime("%Y-%m-%d %H:%M:%S")
-    df["updatedAt"] = df["updatedAt"].dt.strftime("%Y-%m-%d %H:%M:%S")
-    return df.to_dict(orient="records")
+# @app.get("/")
+# async def homepage_template(request: Request):
+#     return templates.TemplateResponse(request=request, name="page_min.html")
